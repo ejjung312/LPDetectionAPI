@@ -59,8 +59,11 @@ async def read_item(image: UploadFile = File(...), db: Session = Depends(get_db)
         db_lp = get_license_plate(db, license_plate_text)
         if db_lp is None:
             create_license_plate(db, license_plate_text)
+            is_exist = False
+        else:
+            is_exist = True
 
-        return {"message": "OK", "license_plate_text": license_plate_text}
+        return {"message": "OK", "is_exist": is_exist, "license_plate_text": license_plate_text}
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"message": str(e)})
