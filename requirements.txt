@@ -5,3 +5,6 @@ opencv-python==4.11.0.86
 python-multipart==0.0.20
 paddlepaddle==3.0.0
 paddleocr==2.10.0
+sqlalchemy==2.0.40
+pymysql==1.1.1
+python-dotenv==1.1.0
