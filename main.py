@@ -45,10 +45,7 @@ async def read_item(image: UploadFile = File(...), db: Session = Depends(get_db)
         if img is None:
             return JSONResponse(status_code=400, content={"message": "이미지 디코딩 실패"})
 
-        license_plate_text = '12가3456'
-
-        create_license_plate(db, license_plate_text)
-
+        license_plate_text = '12가3457'
         # result = ocr.ocr(img, det=False, cls=False)
         #
         # if result:  # 결과가 비어있지 않다면
@@ -58,6 +55,10 @@ async def read_item(image: UploadFile = File(...), db: Session = Depends(get_db)
         #         print(license_plate_text)
         # else:
         #     print("OCR 결과 없음")
+
+        db_lp = get_license_plate(db, license_plate_text)
+        if db_lp is None:
+            create_license_plate(db, license_plate_text)
 
         return {"message": "OK", "license_plate_text": license_plate_text}
 
