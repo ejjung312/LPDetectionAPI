@@ -1,15 +1,16 @@
 from fastapi import FastAPI, UploadFile, File, Depends
 from fastapi.responses import JSONResponse
+from paddleocr import PaddleOCR
+
+import numpy as np
+import cv2
+import logging
 
 import database
 from database import engine, Base
 from models import *
 from crud import *
-from paddleocr import PaddleOCR
-import numpy as np
-import cv2
-
-import logging
+from util import *
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -54,16 +55,19 @@ async def read_item(image: UploadFile = File(...), db: Session = Depends(get_db)
             lines = result[0]  # 첫 번째 OCR 결과만 사용
             for line in lines:
                 license_plate_text = line[0]
-                print(license_plate_text)
         else:
             print("OCR 결과 없음")
 
-        if license_plate_text != '':
+        # 포맷 확인
+        is_valid = check_lp_format(license_plate_text)
+
+        if license_plate_text != '' and is_valid:
             db_lp = get_license_plate(db, license_plate_text)
             if db_lp is None:
                 create_license_plate(db, license_plate_text)
                 is_exist = False
 
+        print(license_plate_text)
         return {"message": "OK", "is_exist": is_exist, "license_plate_text": license_plate_text}
 
     except Exception as e:

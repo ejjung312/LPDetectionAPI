@@ -3,22 +3,29 @@ import re
 """
 12가 3456
 123가 3456
-
-https://github.com/computervisioneng/automatic-number-plate-recognition-python-yolov8/blob/main/util.py
 """
 def check_lp_format(text):
-    if len(text) != 8 or len(text) != 9:
+    text_len = int(len(text))
+    if text_len != 7 and text_len != 8:
         return False
 
-    t = text.split()
-    print(t)
+    # 한글인지 확인
+    p = re.compile('[ㄱ-힣]')
+    r = p.search(text)
+    if r is None:
+        return False
 
-    # p = re.compile('[ㄱ-힣]')
-    # r = p.search(text)
-    #
-    # if r is None:
-    #     return False
-    # else:
-    #     return True
+    pos = r.span()[1]
+    t1 = text[:pos]
+    t2 = text[pos:]
 
-check_lp_format("12가 3456")
+    # 숫자인지 확인
+    if not t1[:-1].isdecimal():
+        return False
+    if not t2.isdecimal():
+        return False
+
+    return True
+
+if __name__ == "__main__":
+    check_lp_format("12가3456")
